@@ -1,19 +1,32 @@
-import { getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import app from "./firebase.init";
+import { useState } from "react";
+
 const auth = getAuth(app);
 function App() {
+  const [email,setEmail] = useState('');
+  const [password,setPassword]= useState('');
   const handleOnBlur = (event) => {
-    console.log(event.target.value);
+    setEmail(event.target.value);
   };
-  const handleOnChange = (event) => {
-    console.log(event.target.value);
+  const handleOnBlurPass = (event) => {
+    setPassword(event.target.value);
   };
   const handleSubmit = (event) => {
-    console.log("submit btn activate");
+    createUserWithEmailAndPassword(auth,email,password)
+    .then(result=>{
+      const user = result.user;
+      console.log(user);
+
+    })
+    .catch(error=>{
+      console.error(error);
+    })
+    console.log("submit btn activate",email ,password);
     event.preventDefault();
   };
   return (
@@ -27,6 +40,7 @@ function App() {
               onBlur={handleOnBlur}
               type="email"
               placeholder="Enter email"
+              required
             />
             <Form.Text className="text-muted">
               We'll never share your email with anyone else.
@@ -36,9 +50,10 @@ function App() {
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Password</Form.Label>
             <Form.Control
-              onChange={handleOnChange}
+              onBlur={handleOnBlurPass}
               type="password"
               placeholder="Password"
+              required
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicCheckbox">
